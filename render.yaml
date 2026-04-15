@@ -1,7 +1,8 @@
 services:
   - type: web
     name: amazon-clone-backend
-    runtime: node
+    env: node
+    plan: free
     rootDir: backend
     buildCommand: npm install
     startCommand: node server.js
@@ -10,3 +11,13 @@ services:
         value: production
       - key: PORT
         value: 5000
+      - key: DB_NAME
+        value: amazonclone
+      - key: DB_USER
+        value: postgres
+      - key: DB_PASSWORD
+        value: postgres
+      - key: DB_HOST
+        value: localhost
+      - key: DB_PORT
+        value: 5432
