@@ -22,6 +22,7 @@ const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/orders');
 const authRoutes = require('./routes/auth');
+const aiChatRoutes = require('./routes/aichat');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -50,6 +51,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/ai', aiChatRoutes);
 
 app.get('/api/health', (req, res) => res.json({ status: 'OK', db: 'PostgreSQL/MySQL', timestamp: new Date() }));
 
