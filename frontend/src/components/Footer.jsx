@@ -55,10 +55,10 @@ export default function Footer() {
           <div className="footer-column">
             <h3>Connect with Us</h3>
             <ul>
-              <li><a href="#facebook">🌐 Facebook</a></li>
-              <li><a href="#twitter">🐦 Twitter</a></li>
-              <li><a href="#instagram">📷 Instagram</a></li>
-              <li><a href="#linkedin">💼 LinkedIn</a></li>
+              <li><a href="#facebook">Facebook</a></li>
+              <li><a href="#twitter">Twitter</a></li>
+              <li><a href="#instagram">Instagram</a></li>
+              <li><a href="#linkedin">LinkedIn</a></li>
             </ul>
           </div>
           
@@ -91,10 +91,10 @@ export default function Footer() {
           <div className="footer-bottom-content">
             <div className="footer-logo">
               <span className="logo-amazon">amazon</span>
-              <span className="logo-dot">🛒</span>
+              <span className="logo-dot">.</span>
             </div>
             <p className="footer-copyright">
-              © 2026 Amazon Clone. Built with ❤️ by Shirshak.
+              © 2026 Amazon Clone. Built by Shirshak.
             </p>
             <div className="footer-links-bottom">
               <a href="#privacy">Privacy Policy</a>

@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
+import { RealtimeProvider } from './context/RealtimeContext';
 import Home from './pages/Home';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
@@ -13,34 +14,38 @@ import Signup from './pages/Signup';
 import OrderHistory from './pages/OrderHistory';
 import Footer from './components/Footer';
 import AIChat from './components/AIChat';
+import NotificationCenter from './components/NotificationCenter';
 import './index.css';
 
 export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <BrowserRouter>
-          <Toaster
-            position="bottom-right"
-            toastOptions={{
-              duration: 3000,
-              style: { fontSize: '14px', maxWidth: '360px' },
-            }}
-          />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/order/:id" element={<OrderConfirmation />} />
-            <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/orders" element={<OrderHistory />} />
-          </Routes>
-          <Footer />
-          <AIChat />
-        </BrowserRouter>
+        <RealtimeProvider>
+          <BrowserRouter>
+            <Toaster
+              position="bottom-right"
+              toastOptions={{
+                duration: 3000,
+                style: { fontSize: '14px', maxWidth: '360px' },
+              }}
+            />
+            <NotificationCenter />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/order/:id" element={<OrderConfirmation />} />
+              <Route path="/order-confirmation/:id" element={<OrderConfirmation />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/orders" element={<OrderHistory />} />
+            </Routes>
+            <Footer />
+            <AIChat />
+          </BrowserRouter>
+        </RealtimeProvider>
       </CartProvider>
     </AuthProvider>
   );

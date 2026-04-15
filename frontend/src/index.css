@@ -1338,8 +1338,6 @@ img { max-width: 100%; display: block; }
 .footer-links-bottom span {
   color: #666;
 }
-  cursor: pointer;
-}
 
 .footer-logo:hover {
   border-color: #febd69;

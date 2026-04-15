@@ -4,6 +4,7 @@ import { FiStar } from 'react-icons/fi';
 import { BsFillStarFill, BsStarHalf, BsStar } from 'react-icons/bs';
 import { AiOutlineShoppingCart, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useCart } from '../context/CartContext';
+import LiveStockIndicator from './LiveStockIndicator';
 import toast from 'react-hot-toast';
 
 function StarRating({ rating }) {
@@ -75,6 +76,8 @@ export default function ProductCard({ product }) {
           <StarRating rating={product.rating} />
           <span className="product-reviews">({product.reviews.toLocaleString()})</span>
         </div>
+
+        <LiveStockIndicator productId={pid} initialStock={product.stock || 0} />
 
         <div className="product-price-row">
           <span className="product-price">
