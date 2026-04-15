@@ -10,9 +10,24 @@ import { MOCK_PRODUCTS } from '../services/mockData';
 const CATEGORIES = ['All', 'Electronics', 'Books', 'Clothing', 'Home & Kitchen', 'Sports'];
 
 const HERO_BANNERS = [
-  { bg: '#131921', text: 'Deals on Electronics', sub: 'Up to 40% off top brands', color: '#febd69' },
-  { bg: '#232f3e', text: 'New Arrivals in Fashion', sub: 'Shop the latest trends', color: '#fff' },
-  { bg: '#37475a', text: 'Home & Kitchen Sale', sub: 'Upgrade your space today', color: '#febd69' },
+  { 
+    bg: 'url(https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200)',
+    text: 'Deals on Electronics', 
+    sub: 'Up to 40% off top brands', 
+    color: '#febd69'
+  },
+  { 
+    bg: 'url(https://images.unsplash.com/photo-1609637063455-a7f09e688d3f?w=1200)',
+    text: 'New Arrivals in Fashion', 
+    sub: 'Shop the latest trends', 
+    color: '#000'
+  },
+  { 
+    bg: 'url(https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200)',
+    text: 'Home & Kitchen Sale', 
+    sub: 'Upgrade your space today', 
+    color: '#febd69'
+  },
 ];
 
 export default function Home() {
