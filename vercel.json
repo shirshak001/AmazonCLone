@@ -2,25 +2,6 @@
   "framework": "vite",
   "outputDirectory": "frontend/dist",
   "rootDirectory": "frontend",
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "Content-Security-Policy",
-          "value": "script-src 'self' 'unsafe-eval' 'unsafe-inline' blob: https:; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https:; default-src 'self' https:;"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "SAMEORIGIN"
-        }
-      ]
-    }
-  ],
   "rewrites": [
     {
       "source": "/(.*)",
