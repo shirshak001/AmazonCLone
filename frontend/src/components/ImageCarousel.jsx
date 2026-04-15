@@ -5,7 +5,13 @@ export default function ImageCarousel({ images = [] }) {
   const [main, setMain] = useState(0);
 
   if (!images.length) return (
-    <div className="carousel-placeholder">No image</div>
+    <div className="carousel-placeholder">
+      <img 
+        src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=450&fit=crop" 
+        alt="Product"
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+    </div>
   );
 
   const prev = () => setMain(i => (i - 1 + images.length) % images.length);

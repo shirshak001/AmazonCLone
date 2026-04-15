@@ -1,11 +1,13 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiShoppingCart, FiSearch, FiMapPin, FiMenu } from 'react-icons/fi';
+import { FiShoppingCart, FiSearch, FiMapPin, FiMenu, FiLogOut } from 'react-icons/fi';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
 
 export default function Navbar({ onSearch }) {
   const { cartCount } = useCart();
+  const { user, logout } = useAuth();
   const [query, setQuery] = useState('');
   const navigate = useNavigate();
 
@@ -13,6 +15,11 @@ export default function Navbar({ onSearch }) {
     e.preventDefault();
     if (onSearch) onSearch(query);
     else navigate(`/?search=${encodeURIComponent(query)}`);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   return (
@@ -55,11 +62,48 @@ export default function Navbar({ onSearch }) {
           </button>
         </form>
 
+        {/* Auth Section (Login/Signup or User Menu) */}
+        {user ? (
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <div className="navbar-link">
+              <span className="nav-label">Hello</span>
+              <span className="nav-val">{user.firstName}</span>
+            </div>
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '6px 10px',
+                border: '1px solid transparent',
+                borderRadius: '4px',
+                background: 'none',
+                color: '#fff',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '13px',
+                fontWeight: '600',
+                transition: 'all .2s'
+              }}
+              onMouseEnter={(e) => (e.target.style.borderColor = '#fff')}
+              onMouseLeave={(e) => (e.target.style.borderColor = 'transparent')}
+            >
+              <FiLogOut size={14} />
+              Sign Out
+            </button>
+          </div>
+        ) : (
+          <Link to="/login" className="navbar-link">
+            <span className="nav-label">Hello, Sign in</span>
+            <span className="nav-val">Account</span>
+          </Link>
+        )}
+
         {/* Returns */}
-        <div className="navbar-link">
+        <Link to="/orders" className="navbar-link">
           <span className="nav-label">Returns</span>
           <span className="nav-val">& Orders</span>
-        </div>
+        </Link>
 
         {/* Cart */}
         <Link to="/cart" className="navbar-cart">

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiStar } from 'react-icons/fi';
 import { BsFillStarFill, BsStarHalf, BsStar } from 'react-icons/bs';
+import { AiOutlineShoppingCart, AiOutlineMinus, AiOutlinePlus } from 'react-icons/ai';
 import { useCart } from '../context/CartContext';
 import toast from 'react-hot-toast';
 
@@ -17,13 +18,38 @@ function StarRating({ rating }) {
 
 export default function ProductCard({ product }) {
   const { addToCart } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [isAdding, setIsAdding] = useState(false);
+  const [showQtySelector, setShowQtySelector] = useState(false);
 
   const handleAddToCart = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    setIsAdding(true);
     const pid = product._id || product.id;
-    const ok = await addToCart(pid);
-    if (ok) toast.success(`"${product.name.slice(0, 30)}..." added to cart`);
-    else toast.error('Failed to add to cart');
+    const ok = await addToCart(pid, quantity);
+    setIsAdding(false);
+    
+    if (ok) {
+      toast.success(`Added ${quantity} item(s) to cart`, { 
+
+        duration: 2000
+      });
+      setQuantity(1);
+      setShowQtySelector(false);
+    } else {
+      toast.error('Failed to add to cart');
+    }
+  };
+
+  const handleQtyChange = (e, delta) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const newQty = quantity + delta;
+    if (newQty >= 1 && newQty <= (product.stock || 10)) {
+      setQuantity(newQty);
+    }
   };
 
   const discount = product.originalPrice
@@ -31,18 +57,25 @@ export default function ProductCard({ product }) {
     : null;
 
   const pid = product._id || product.id;
+  const inStock = product.stock > 0;
+
   return (
     <Link to={`/product/${pid}`} className="product-card">
       {product.badge && <span className="product-badge">{product.badge}</span>}
+      
       <div className="product-image-wrap">
         <img src={product.images[0]} alt={product.name} className="product-image" loading="lazy" />
+        {!inStock && <div className="product-out-of-stock">Out of Stock</div>}
       </div>
+
       <div className="product-info">
         <p className="product-name">{product.name}</p>
+        
         <div className="product-rating">
           <StarRating rating={product.rating} />
           <span className="product-reviews">({product.reviews.toLocaleString()})</span>
         </div>
+
         <div className="product-price-row">
           <span className="product-price">
             <span className="price-symbol">₹</span>
@@ -53,11 +86,48 @@ export default function ProductCard({ product }) {
           )}
           {discount && <span className="product-discount">({discount}% off)</span>}
         </div>
+
         {product.price > 499 && (
-          <p className="product-delivery">FREE Delivery by Tomorrow</p>
+          <p className="product-delivery">[OK] FREE Delivery by Tomorrow</p>
         )}
-        <button className="btn-add-cart" onClick={handleAddToCart} id={`add-cart-${pid}`}>
-          Add to Cart
+
+        {showQtySelector ? (
+          <div className="product-qty-selector" onClick={(e) => e.preventDefault()}>
+            <button 
+              className="qty-btn-minus" 
+              onClick={(e) => handleQtyChange(e, -1)}
+              disabled={quantity <= 1}
+            >
+              <AiOutlineMinus />
+            </button>
+            <span className="qty-display">{quantity}</span>
+            <button 
+              className="qty-btn-plus" 
+              onClick={(e) => handleQtyChange(e, 1)}
+              disabled={quantity >= (product.stock || 10)}
+            >
+              <AiOutlinePlus />
+            </button>
+          </div>
+        ) : null}
+
+        <button 
+          className={`btn-add-cart ${isAdding ? 'loading' : ''} ${!inStock ? 'disabled' : ''}`}
+          onClick={handleAddToCart}
+          onMouseEnter={() => inStock && setShowQtySelector(true)}
+          onMouseLeave={() => setShowQtySelector(false)}
+          disabled={!inStock || isAdding}
+          id={`add-cart-${pid}`}
+        >
+          {isAdding ? (
+            <>
+              <span className="spinner-mini" /> Adding...
+            </>
+          ) : (
+            <>
+              <AiOutlineShoppingCart /> Add to Cart
+            </>
+          )}
         </button>
       </div>
     </Link>

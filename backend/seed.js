@@ -229,19 +229,19 @@ const products = [
 async function seed() {
   try {
     await sequelize.authenticate();
-    console.log('📦 Connected to PostgreSQL');
+    console.log('[OK] Connected to SQLite');
 
     await sequelize.sync({ force: true });
-    console.log('🗄️  Tables created');
+    console.log('[OK] Tables created');
 
     await Product.bulkCreate(products);
-    console.log(`✅ Seeded ${products.length} products`);
+    console.log(`[OK] Seeded ${products.length} products`);
 
     await sequelize.close();
-    console.log('✅ Done! Database seeded successfully.');
+    console.log('[OK] Done! Database seeded successfully.');
     process.exit(0);
   } catch (err) {
-    console.error('❌ Seed error:', err.message);
+    console.error('[ERROR] Seed error:', err.message);
     process.exit(1);
   }
 }

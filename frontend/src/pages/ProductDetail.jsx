@@ -6,8 +6,11 @@ import { useCart } from '../context/CartContext';
 import ImageCarousel from '../components/ImageCarousel';
 import Spinner from '../components/Spinner';
 import Navbar from '../components/Navbar';
+import Reviews from '../components/Reviews';
+import RelatedProducts from '../components/RelatedProducts';
 import { BsFillStarFill, BsStarHalf, BsStar } from 'react-icons/bs';
-import { FiShield, FiTruck, FiRefreshCw, FiCheckCircle } from 'react-icons/fi';
+import { FiShield, FiTruck, FiRefreshCw, FiCheckCircle, FiMinus, FiPlus, FiHeart } from 'react-icons/fi';
+import { AiOutlineShoppingCart } from 'react-icons/ai';
 import toast from 'react-hot-toast';
 
 function StarRating({ rating }) {
@@ -26,6 +29,7 @@ export default function ProductDetail() {
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
   const [adding, setAdding] = useState(false);
+  const [inWishlist, setInWishlist] = useState(false);
 
   useEffect(() => {
     fetchProduct(id)
@@ -43,15 +47,23 @@ export default function ProductDetail() {
     setAdding(true);
     const ok = await addToCart(product._id || product.id, qty);
     setAdding(false);
-    if (ok) toast.success('Added to cart!');
-    else toast.error('Could not add to cart');
+    if (ok) {
+      toast.success(`Added ${qty} item(s) to cart!`);
+    } else {
+      toast.error('Could not add to cart');
+    }
   };
 
   const handleBuyNow = async () => {
     setAdding(true);
-    await addToCart(product._id || product.id, qty);
+    const ok = await addToCart(product._id || product.id, qty);
     setAdding(false);
-    navigate('/cart');
+    if (ok) navigate('/cart');
+  };
+
+  const toggleWishlist = () => {
+    setInWishlist(!inWishlist);
+    toast.success(inWishlist ? 'Removed from wishlist' : 'Added to wishlist');
   };
 
   if (loading) return <><Navbar /><Spinner /></>;
@@ -61,6 +73,7 @@ export default function ProductDetail() {
     ? Math.round((1 - product.price / product.originalPrice) * 100) : null;
 
   const specs = product.specs instanceof Map ? Object.fromEntries(product.specs) : product.specs;
+  const inStock = product.stock > 0;
 
   return (
     <>
@@ -125,35 +138,103 @@ export default function ProductDetail() {
           {/* Buy Box */}
           <div className="buy-box">
             <div className="buy-price">₹{product.price.toLocaleString('en-IN')}</div>
-            <p className="buy-delivery">FREE Delivery by Tomorrow</p>
-            <p className="buy-stock" style={{ color: product.stock > 10 ? '#007600' : '#b12704' }}>
-              {product.stock > 10 ? 'In stock' : product.stock > 0 ? `Only ${product.stock} left!` : 'Out of stock'}
+            <p className="buy-delivery">[OK] FREE Delivery by Tomorrow</p>
+            <p className={`buy-stock ${inStock ? 'in-stock' : 'out-of-stock'}`}>
+              {inStock ? (product.stock > 10 ? '[OK] In stock' : `[OK] Only ${product.stock} left!`) : '[X] Out of stock'}
             </p>
 
-            {/* Quantity */}
-            <div className="buy-qty">
-              <label>Qty:</label>
-              <select value={qty} onChange={e => setQty(+e.target.value)} className="qty-select">
-                {[...Array(Math.min(product.stock, 10))].map((_, i) => (
-                  <option key={i+1} value={i+1}>{i+1}</option>
-                ))}
-              </select>
+            <hr className="buy-divider" />
+
+            {/* Quantity Control */}
+            <div className="buy-qty-control">
+              <label>Quantity:</label>
+              <div className="qty-counter">
+                <button 
+                  className="qty-counter-btn" 
+                  onClick={() => setQty(Math.max(1, qty - 1))}
+                  disabled={qty <= 1 || !inStock}
+                >
+                  <FiMinus />
+                </button>
+                <input 
+                  type="number" 
+                  value={qty} 
+                  onChange={(e) => setQty(Math.min(Math.max(1, parseInt(e.target.value) || 1), product.stock || 10))}
+                  className="qty-input"
+                  disabled={!inStock}
+                />
+                <button 
+                  className="qty-counter-btn" 
+                  onClick={() => setQty(Math.min(product.stock || 10, qty + 1))}
+                  disabled={qty >= (product.stock || 10) || !inStock}
+                >
+                  <FiPlus />
+                </button>
+              </div>
             </div>
 
-            <button className="buy-add-cart" onClick={handleAddToCart} disabled={adding || product.stock === 0} id="btn-add-cart-detail">
-              {adding ? 'Adding...' : 'Add to Cart'}
+            <hr className="buy-divider" />
+
+            <button 
+              className={`buy-add-cart ${adding ? 'loading' : ''} ${!inStock ? 'disabled' : ''}`}
+              onClick={handleAddToCart} 
+              disabled={adding || !inStock}
+              id="btn-add-cart-detail"
+            >
+              {adding ? (
+                <>
+                  <span className="spinner-mini" /> Adding...
+                </>
+              ) : (
+                <>
+                  <AiOutlineShoppingCart /> Add to Cart
+                </>
+              )}
             </button>
-            <button className="buy-now" onClick={handleBuyNow} disabled={adding || product.stock === 0} id="btn-buy-now">
-              Buy Now
+
+            <button 
+              className={`buy-now ${adding ? 'loading' : ''} ${!inStock ? 'disabled' : ''}`}
+              onClick={handleBuyNow} 
+              disabled={adding || !inStock}
+              id="btn-buy-now"
+            >
+              {adding ? 'Processing...' : 'Buy Now'}
+            </button>
+
+            <button 
+              className={`buy-wishlist ${inWishlist ? 'saved' : ''}`}
+              onClick={toggleWishlist}
+              title="Add to wishlist"
+            >
+              <FiHeart /> {inWishlist ? 'Saved' : 'Save for later'}
             </button>
 
             <div className="buy-trust">
-              <div className="trust-item"><FiShield /> Secure transaction</div>
-              <div className="trust-item"><FiTruck /> Sold by Amazon.in</div>
-              <div className="trust-item"><FiRefreshCw /> 10-day returns</div>
+              <div className="trust-item">
+                <FiShield size={16} />
+                <span>Secure transaction</span>
+              </div>
+              <div className="trust-item">
+                <FiTruck size={16} />
+                <span>Returns within 10 days</span>
+              </div>
+              <div className="trust-item">
+                <FiCheckCircle size={16} />
+                <span>Fulfilled by Amazon</span>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Reviews Section */}
+        <Reviews productId={product._id || product.id} />
+
+        {/* Related Products Section */}
+        <RelatedProducts 
+          category={product.category} 
+          productId={product._id || product.id}
+          onAddToCart={addToCart}
+        />
       </div>
     </>
   );
