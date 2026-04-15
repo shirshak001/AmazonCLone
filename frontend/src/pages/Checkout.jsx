@@ -174,37 +174,3 @@ export default function Checkout() {
     </>
   );
 }
-              </button>
-              <p className="checkout-terms-mini">By placing your order, you agree to our terms.</p>
-              <hr />
-              <h3 className="checkout-summary-title">Order Summary</h3>
-              <div className="summary-row"><span>Items ({items.reduce((s,i)=>s+i.quantity,0)})</span><span>₹{cartTotal.toLocaleString('en-IN')}</span></div>
-              <div className="summary-row"><span>Shipping</span><span>{shipping === 0 ? <span style={{color:'#007600'}}>FREE</span> : `₹${shipping}`}</span></div>
-              <hr />
-              <div className="summary-row total-row">
-                <strong>Order Total</strong>
-                <strong className="summary-total-price">₹{total.toLocaleString('en-IN')}</strong>
-              </div>
-              <hr />
-              <h3 className="checkout-summary-title">Order Items</h3>
-              {items.map(item => {
-                const p = item.productId;
-                if (!p) return null;
-                return (
-                  <div key={p._id || p.id} className="checkout-item">
-                    <img src={p.images?.[0]} alt={p.name} className="checkout-item-img" />
-                    <div>
-                      <p className="checkout-item-name">{p.name?.slice(0,50)}...</p>
-                      <p className="checkout-item-qty">Qty: {item.quantity}</p>
-                      <p className="checkout-item-price">₹{(p.price * item.quantity).toLocaleString('en-IN')}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}

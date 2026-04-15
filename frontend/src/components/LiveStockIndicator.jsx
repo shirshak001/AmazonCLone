@@ -1,8 +1,8 @@
-import React, { useContext } from 'react';
-import { RealtimeContext } from '../context/RealtimeContext';
+import React from 'react';
+import { useRealtime } from '../context/RealtimeContext';
 
 export default function LiveStockIndicator({ productId, initialStock }) {
-  const { stockUpdates } = useContext(RealtimeContext);
+  const { stockUpdates } = useRealtime();
   
   const stockStatus = stockUpdates[productId];
   const currentStock = stockStatus?.stock || initialStock;

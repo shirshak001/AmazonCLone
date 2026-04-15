@@ -1,6 +1,14 @@
-import React, { createContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useCallback, useEffect, useContext } from 'react';
 
 export const RealtimeContext = createContext();
+
+export function useRealtime() {
+  const context = useContext(RealtimeContext);
+  if (!context) {
+    throw new Error('useRealtime must be used within RealtimeProvider');
+  }
+  return context;
+}
 
 export function RealtimeProvider({ children }) {
   const [stockUpdates, setStockUpdates] = useState({});

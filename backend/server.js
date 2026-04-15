@@ -59,12 +59,29 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
+// Allow server to start even without database initially
+// Database will sync in background
+let dbConnected = false;
+
 sequelize.sync({ alter: false })
   .then(() => {
+    dbConnected = true;
     console.log('[OK] Database synchronized');
-    app.listen(PORT, () => console.log(`[OK] Server running on http://localhost:${PORT}`));
   })
   .catch(err => {
-    console.error('[ERROR] DB connection failed:', err.message);
-    process.exit(1);
+    console.error('[WARNING] Database connection failed:', err.message);
+    console.log('[INFO] Server will run in limited mode without database');
   });
+
+// Start server immediately
+app.listen(PORT, () => {
+  console.log(`[OK] Server running on http://localhost:${PORT}`);
+  console.log(`[INFO] API: http://localhost:${PORT}/api`);
+  console.log(`[INFO] Health Check: http://localhost:${PORT}/api/health`);
+});
+
+// Graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n[INFO] Shutting down server...');
+  process.exit(0);
+});

@@ -1,9 +1,9 @@
-import React, { useContext } from 'react';
-import { RealtimeContext } from '../context/RealtimeContext';
+import React from 'react';
+import { useRealtime } from '../context/RealtimeContext';
 import { FiX, FiAlertCircle, FiCheckCircle, FiShoppingCart } from 'react-icons/fi';
 
 export default function NotificationCenter() {
-  const { notifications, removeNotification } = useContext(RealtimeContext);
+  const { notifications, removeNotification } = useRealtime();
 
   const getNotificationIcon = (type) => {
     switch (type) {
