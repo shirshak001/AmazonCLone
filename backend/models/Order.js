@@ -1,22 +1,38 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+const mongoose = require('mongoose');
 
-const Order = sequelize.define('Order', {
-  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-  orderId: { type: DataTypes.STRING(20), allowNull: false, unique: true },
-  items: { type: DataTypes.JSONB, allowNull: false, defaultValue: [] },
-  address: { type: DataTypes.JSONB, allowNull: false },
-  subtotal: { type: DataTypes.DECIMAL(12, 2) },
-  shipping: { type: DataTypes.DECIMAL(10, 2) },
-  total: { type: DataTypes.DECIMAL(12, 2) },
-  status: {
-    type: DataTypes.ENUM('Confirmed', 'Processing', 'Shipped', 'Delivered'),
-    defaultValue: 'Confirmed',
+const orderSchema = new mongoose.Schema(
+  {
+    orderId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    items: [
+      {
+        productId: mongoose.Schema.Types.ObjectId,
+        name: String,
+        price: Number,
+        quantity: Number,
+        image: String,
+      },
+    ],
+    address: {
+      street: String,
+      city: String,
+      state: String,
+      pincode: String,
+    },
+    subtotal: Number,
+    shipping: Number,
+    total: Number,
+    status: {
+      type: String,
+      enum: ['Confirmed', 'Processing', 'Shipped', 'Delivered'],
+      default: 'Confirmed',
+    },
+    estimatedDelivery: Date,
   },
-  estimatedDelivery: { type: DataTypes.DATE },
-}, {
-  tableName: 'orders',
-  timestamps: true,
-});
+  { timestamps: true }
+);
 
-module.exports = Order;
+module.exports = mongoose.model('Order', orderSchema);

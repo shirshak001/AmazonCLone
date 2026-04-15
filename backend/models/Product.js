@@ -1,25 +1,24 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+const mongoose = require('mongoose');
 
-const Product = sequelize.define('Product', {
-  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-  name: { type: DataTypes.STRING(500), allowNull: false },
-  price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
-  originalPrice: { type: DataTypes.DECIMAL(10, 2), allowNull: true },
-  category: {
-    type: DataTypes.ENUM('Electronics', 'Books', 'Clothing', 'Home & Kitchen', 'Sports'),
-    allowNull: false,
+const productSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    price: { type: Number, required: true },
+    originalPrice: { type: Number },
+    category: {
+      type: String,
+      enum: ['Electronics', 'Books', 'Clothing', 'Home & Kitchen', 'Sports'],
+      required: true,
+    },
+    images: [String],
+    description: { type: String, required: true },
+    specs: { type: Object, default: {} },
+    rating: { type: Number, default: 4.0 },
+    reviews: { type: Number, default: 0 },
+    stock: { type: Number, default: 100 },
+    badge: String,
   },
-  images: { type: DataTypes.ARRAY(DataTypes.TEXT), defaultValue: [] },
-  description: { type: DataTypes.TEXT, allowNull: false },
-  specs: { type: DataTypes.JSONB, defaultValue: {} },
-  rating: { type: DataTypes.DECIMAL(3, 1), defaultValue: 4.0 },
-  reviews: { type: DataTypes.INTEGER, defaultValue: 0 },
-  stock: { type: DataTypes.INTEGER, defaultValue: 100 },
-  badge: { type: DataTypes.STRING(50), allowNull: true },
-}, {
-  tableName: 'products',
-  timestamps: true,
-});
+  { timestamps: true }
+);
 
-module.exports = Product;
+module.exports = mongoose.model('Product', productSchema);

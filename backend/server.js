@@ -2,11 +2,11 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const sequelize = require('./db');
+const connectDB = require('./db');
 
-// Import models to register associations
+// Import models to register schemas
 require('./models/Product');
-require('./models/Cart');  // registers Cart, CartItem and associations
+require('./models/Cart');
 require('./models/Order');
 require('./models/User');
 
@@ -43,18 +43,19 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
 
-app.get('/api/health', (req, res) => res.json({ status: 'OK', db: 'SQLite', timestamp: new Date() }));
+app.get('/api/health', (req, res) => res.json({ status: 'OK', db: 'MongoDB', timestamp: new Date() }));
 
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-sequelize.sync({ alter: false })
+// Connect to MongoDB and start server
+connectDB()
   .then(() => {
-    console.log('[OK] SQLite connected & tables synced');
+    console.log('[OK] MongoDB connected');
     app.listen(PORT, () => console.log(`[OK] Server running on http://localhost:${PORT}`));
   })
   .catch(err => {
-    console.error('[ERROR] DB connection failed:', err.message);
+    console.error('[ERROR] Failed to start server:', err.message);
     process.exit(1);
   });

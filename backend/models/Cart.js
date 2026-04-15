@@ -1,24 +1,28 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../db');
+const mongoose = require('mongoose');
 
-// Cart session table
-const Cart = sequelize.define('Cart', {
-  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-  sessionId: { type: DataTypes.STRING(255), allowNull: false, unique: true },
-}, { tableName: 'carts', timestamps: true });
+const cartItemSchema = new mongoose.Schema({
+  productId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product',
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    default: 1,
+    required: true,
+  },
+});
 
-// CartItem join table
-const CartItem = sequelize.define('CartItem', {
-  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
-  cartId: { type: DataTypes.UUID, allowNull: false },
-  productId: { type: DataTypes.UUID, allowNull: false },
-  quantity: { type: DataTypes.INTEGER, defaultValue: 1, allowNull: false },
-}, { tableName: 'cart_items', timestamps: false });
+const cartSchema = new mongoose.Schema(
+  {
+    sessionId: {
+      type: String,
+      required: true,
+      unique: true,
+    },
+    items: [cartItemSchema],
+  },
+  { timestamps: true }
+);
 
-// Associations
-const Product = require('./Product');
-Cart.hasMany(CartItem, { foreignKey: 'cartId', as: 'items', onDelete: 'CASCADE' });
-CartItem.belongsTo(Cart, { foreignKey: 'cartId' });
-CartItem.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
-
-module.exports = { Cart, CartItem };
+module.exports = mongoose.model('Cart', cartSchema);
