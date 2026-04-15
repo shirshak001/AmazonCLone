@@ -1,12 +1,18 @@
 import axios from 'axios';
 
 const getBaseURL = () => {
-  // Production (Vercel): use relative path to backend
-  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
-    return '/_/backend/api';
+  // Use VITE_BACKEND_URL environment variable if available
+  if (import.meta.env.VITE_BACKEND_URL) {
+    return import.meta.env.VITE_BACKEND_URL;
   }
+  
   // Development: use localhost
-  return 'http://localhost:5000/api';
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return 'http://localhost:5000/api';
+  }
+  
+  // Production fallback: use relative path
+  return '/api';
 };
 
 const api = axios.create({
