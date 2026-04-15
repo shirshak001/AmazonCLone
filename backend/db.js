@@ -1,20 +1,16 @@
 require('dotenv').config();
-const mongoose = require('mongoose');
+const { Sequelize } = require('sequelize');
 
-const connectDB = async () => {
-  try {
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/amazonclone';
-    
-    await mongoose.connect(mongoUri, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    
-    console.log('[OK] MongoDB connected');
-  } catch (err) {
-    console.error('[ERROR] MongoDB connection failed:', err.message);
-    process.exit(1);
+const sequelize = new Sequelize(
+  process.env.DB_NAME || 'amazonclone',
+  process.env.DB_USER || 'postgres',
+  process.env.DB_PASSWORD || 'postgres',
+  {
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    dialect: process.env.DB_DIALECT || 'postgres',
+    logging: false,
   }
-};
+);
 
-module.exports = connectDB;
+module.exports = sequelize;

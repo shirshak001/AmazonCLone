@@ -1,59 +1,46 @@
-const mongoose = require('mongoose');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../db');
 const bcrypt = require('bcryptjs');
 
-const userSchema = new mongoose.Schema(
-  {
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email'],
-    },
-    password: {
-      type: String,
-      required: true,
-      minlength: 6,
-    },
-    firstName: {
-      type: String,
-      required: true,
-    },
-    lastName: {
-      type: String,
-      required: true,
-    },
-    phone: String,
-    address: {
-      street: String,
-      city: String,
-      state: String,
-      pincode: String,
-    },
-    twoFactorSecret: String,
-    twoFactorEnabled: {
-      type: Boolean,
-      default: false,
-    },
-    backupCodes: [String],
+const User = sequelize.define('User', {
+  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+  email: {
+    type: DataTypes.STRING,
+    unique: true,
+    allowNull: false,
+    lowercase: true,
+    validate: { isEmail: true },
   },
-  { timestamps: true }
-);
+  password: {
+    type: DataTypes.STRING,
+    allowNull: false,
+  },
+  firstName: { type: DataTypes.STRING, allowNull: false },
+  lastName: { type: DataTypes.STRING, allowNull: false },
+  phone: DataTypes.STRING,
+  address: { type: DataTypes.JSONB, defaultValue: {} },
+  twoFactorSecret: DataTypes.STRING,
+  twoFactorEnabled: { type: DataTypes.BOOLEAN, defaultValue: false },
+  backupCodes: { type: DataTypes.ARRAY(DataTypes.STRING) },
+}, {
+  tableName: 'users',
+  timestamps: true,
+});
 
-// Hash password before saving
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  try {
-    this.password = await bcrypt.hash(this.password, 10);
-    next();
-  } catch (err) {
-    next(err);
+// Hash password before save
+User.beforeCreate(async (user) => {
+  user.password = await bcrypt.hash(user.password, 10);
+});
+
+User.beforeUpdate(async (user) => {
+  if (user.changed('password')) {
+    user.password = await bcrypt.hash(user.password, 10);
   }
 });
 
 // Method to verify password
-userSchema.methods.verifyPassword = async function (password) {
+User.prototype.verifyPassword = async function(password) {
   return bcrypt.compare(password, this.password);
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = User;

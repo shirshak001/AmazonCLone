@@ -2,13 +2,21 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const connectDB = require('./db');
+const sequelize = require('./db');
 
-// Import models to register schemas
+// Import models to register associations
 require('./models/Product');
-require('./models/Cart');
+const { Cart, CartItem } = require('./models/Cart');
 require('./models/Order');
 require('./models/User');
+const Product = require('./models/Product');
+const Order = require('./models/Order');
+const User = require('./models/User');
+
+// Setup associations
+Cart.hasMany(CartItem, { foreignKey: 'cartId', as: 'items', onDelete: 'CASCADE' });
+CartItem.belongsTo(Cart, { foreignKey: 'cartId' });
+CartItem.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
 
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
@@ -43,19 +51,18 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/auth', authRoutes);
 
-app.get('/api/health', (req, res) => res.json({ status: 'OK', db: 'MongoDB', timestamp: new Date() }));
+app.get('/api/health', (req, res) => res.json({ status: 'OK', db: 'PostgreSQL/MySQL', timestamp: new Date() }));
 
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB and start server
-connectDB()
+sequelize.sync({ alter: false })
   .then(() => {
-    console.log('[OK] MongoDB connected');
+    console.log('[OK] Database synchronized');
     app.listen(PORT, () => console.log(`[OK] Server running on http://localhost:${PORT}`));
   })
   .catch(err => {
-    console.error('[ERROR] Failed to start server:', err.message);
+    console.error('[ERROR] DB connection failed:', err.message);
     process.exit(1);
   });
