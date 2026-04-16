@@ -172,4 +172,4 @@ Open `http://localhost:5173`
 
 ## 👨‍💻 Author
 
-Built by Shirshak | SDE Intern Assignment
+Built by Aanya| SDE Intern Assignment
